@@ -31,7 +31,7 @@ class Preprocesa:
         return s
 
 preprocesador = Preprocesa()
-texto = "¡AAAAAAAAAAAAAAAHHHHHHHH!"
+texto = "¡AAAAAAAA AAAAAAAH HHHHHHH! áá áéééííóó óúúúú ú  ><<><<<"
 texto_sin_puntuacion = preprocesador.remove_punctuation(texto)
 texto_minusculas = preprocesador.lower_words(texto_sin_puntuacion)
 texto_sin_acentos = preprocesador.quitarAcentos(texto_minusculas)
