@@ -1,5 +1,5 @@
 import string
-
+import pandas as pd
 
 class Preprocesa:
     def __init__(self):
@@ -9,9 +9,10 @@ class Preprocesa:
         especiales = {"\"" , "." , "," , " " , ";" , ":" , "-" , "/"}
         for i in especiales:
             text.replace(i," ")
-        forbidden = {"?", "¿", "¡", "!","<",">","(",")","\"",".",","," ",":",";","-","&","@","/","N/A","#","$"}
-        pf = set(string.punctuation).union(forbidden) # Se crea un set con los caracteres prohibidos (unión de punctuation y forbidden)
-        punctuationfree="".join([i  for i in text if i not in pf]) # Se crea una nueva cadena sin los caracteres prohibidos
+        # (le quité el espacio a forbbiden)
+        forbidden = {"?" , "¿" , "¡" , "!" , "<" , ">" , "(" , ")" , "\"" , "." , "," , ":" , ";" , "-" , "&" , "@" , "/" , "N/A" , "#" , "$"}
+        pf = set(string.punctuation).union(forbidden) # caracteres prohibidos (unión de punctuation y forbidden)
+        punctuationfree="".join([i  for i in text if i not in pf]) # nueva cadena sin los caracteres prohibidos
         return punctuationfree.strip()
 
     def lower_words(self,text):
@@ -29,11 +30,17 @@ class Preprocesa:
         for a, b in replacements:
             s = s.replace(a, b).replace(a.upper(), b.upper())
         return s
+    
+    # método para preprocesar el texto
+    def preprocesamiento(self, text):
+        text = self.quitarAcentos(text)
+        text = self.lower_words(text)
+        text = self.remove_punctuation(text)
+        return text
 
+ds = pd.read_csv("news.csv") # dataset
 preprocesador = Preprocesa()
-texto = "¡AAAAAAAA AAAAAAAH HHHHHHH! áá áéééííóó óúúúú ú  ><<><<<"
-texto_sin_puntuacion = preprocesador.remove_punctuation(texto)
-texto_minusculas = preprocesador.lower_words(texto_sin_puntuacion)
-texto_sin_acentos = preprocesador.quitarAcentos(texto_minusculas)
-
-print(texto_sin_acentos)
+# preprocesamiento para news (nueva columna)
+ds["news preprocesado"] = ds["news"].apply(preprocesador.preprocesamiento)
+# nuevo archivo CSV
+ds.to_csv("news_new.csv", index=False)
