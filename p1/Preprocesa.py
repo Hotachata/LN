@@ -38,9 +38,9 @@ class Preprocesa:
         text = self.remove_punctuation(text)
         return text
 
-ds = pd.read_csv("news.csv") # dataset
+df = pd.read_csv("news.csv") # dataframe
 preprocesador = Preprocesa()
 # preprocesamiento para news (nueva columna)
-ds["news preprocesado"] = ds["news"].apply(preprocesador.preprocesamiento)
+df["preprocesado"] = df["news"].apply(preprocesador.preprocesamiento)
 # nuevo archivo CSV
-ds.to_csv("news_new.csv", index=False)
+df.to_csv("news1.csv", index=False)
