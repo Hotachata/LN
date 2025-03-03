@@ -1,4 +1,5 @@
 import string
+from matplotlib import pyplot as plt
 import pandas as pd
 from collections import defaultdict
 
@@ -163,6 +164,15 @@ try:
     # Imprimir la BoW (fragmento)
     print("Bag of Words:")
     print(bow_df.head())  # Imprime las primeras filas de la BoW
+    
+    conteotipos = df["Type"].value_counts() # contamos la frecuencia de los tipos en el dataframe
+    plt.figure(figsize=(5, 3)) # tamaño de la figura
+    conteotipos.plot(kind="bar", color="skyblue")
+    # etiquetas y título
+    plt.xlabel("tipo de noticia")
+    plt.ylabel("frecuencia")
+    plt.title("frecuencia por tipo de noticia")
+    plt.show()
     
 except Exception as e:
     print(f"\nHa ocurrido un error: {e}\n")
