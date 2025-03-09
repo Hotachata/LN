@@ -1,25 +1,28 @@
+# Imports
 import string
 import pandas as pd
 from collections import defaultdict
-from nltk.corpus import stopwords
+from stopwords import stopwords as stopwords
 from nltk.stem import WordNetLemmatizer
 import matplotlib.pyplot as plt
 
 # Preprocesamiento del texto
 class Preprocesa:
     def __init__(self):
-        self.stopwords = set(stopwords.words('spanish'))
         self.lemmatizer = WordNetLemmatizer()
+        self.text=''
 
     def remove_punctuation(self, text):
-        forbidden = set(string.punctuation).union({"¿", "¡", "<", ">", "(", ")", "\"", ",", ":", ";", "-", "&", "@", "/", "N/A", "#", "$", "‘", "’", "_"})
-        return "".join([char for char in text if char not in forbidden])
+        forbidden = set(string.punctuation).union({"¿", "¡", "<", ">", "(", ")", "\"", ",", ":", ";", "-", "&", "@", "/", "N/A", "#", "$", "‘", "’", "”"})
+        return "".join([i for i in text if i not in forbidden])
 
     def lower_words(self, text):
         return text.lower()
 
     def remove_stopwords(self, text):
-        return " ".join([word for word in text.split() if word not in self.stopwords])
+        text = text.split()
+        text = [word for word in text if word not in stopwords]
+        return " ".join(text)
 
     def remove_accents(self, text):
         replacements = (
@@ -29,6 +32,7 @@ class Preprocesa:
             ("ó", "o"),
             ("ú", "u"),
             ("ñ", "n"),
+            (".", " ")
         )
         for a, b in replacements:
             text = text.replace(a, b).replace(a.upper(), b.upper())
