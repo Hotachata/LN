@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 # Lista de stopwords
 from stopwords import stop_words
+# Nube de palabras
+import spacy # python -m spacy download es_core_news_sm
+from wordcloud import WordCloud as wc
 
 # Guardamos los datos dentro del dataset de noticias en data
 data = pd.read_csv("news.csv")
@@ -27,11 +30,18 @@ plt.xlabel('Tipo de noticia')
 plt.ylabel('Cantidad de registros')
 plt.xticks(rotation=45)
 plt.grid(axis='y', linestyle='--', alpha=0.7)
-plt.show()
+plt.show() # Mostramos la gráfica
 
 # Limpiamos el dataset (preprocesa)
 numeros = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] # Lista de números
-class Preprocesa:
+# Cargamos el modelo en español de spacy
+nlp = spacy.load("es_core_news_sm") # Cargamos el modelo en español de spacy
+# Lista personalizada de stopwords desde el archivo txt
+with open("stopwords.txt", "r", encoding="utf-8") as f:
+    stop_words = set(f.read().strip().split("\n"))
+# Añadimos las stopwords personalizadas a las stopwords de spaCy
+stop_words = stop_words.union(set(nlp.Defaults.stop_words))
+class Preprocesa: # Creamos la clase Preprocesa para preprocesar el dataset
     def __init__(self):
         self.text=''
     def remove_punctuation(self, text):
@@ -80,9 +90,27 @@ def preprocesar_texto(texto):
     texto = preprocesador.remove_numbers(texto)
     texto = preprocesador.quitar_acentos(texto)
     return texto
+# Función para procesar con spaCy
+def preprocesar_con_spacy(texto):
+    doc = nlp(texto)  # Ya el texto está sin acentos y en minúsculas
+    tokens_limpios = [
+        token.lemma_ for token in doc
+        if token.is_alpha and token.lemma_ not in stop_words  # Filtramos stopwords
+    ]
+    return " ".join(tokens_limpios)
 
-# Aplicar preprocesamiento a `news`
-data['text_procesado'] = data['news'].fillna("").apply(preprocesar_texto)
-# Mostrar el dataset con la columna nueva
-print(data[['news', 'text_procesado']].head())
+# Creamos una nueva celda que guarde el texto preprocesado
+data['texto_procesado'] = data['news'].fillna("").apply(preprocesar_texto)  # Primero limpiar el texto
+data['texto_procesado'] = data['texto_procesado'].apply(preprocesar_con_spacy)  # Luego procesar con spaCy
+print(data[['news', 'texto_procesado']].head()) # Imprimimos los cinco primeros textos y sus versiones originales
 
+# Unir todos los textos preprocesados en una sola cadena
+texto_completo = " ".join(data['texto_procesado'].dropna())
+# Crear la nube de palabras
+wordcloud = wc(width=800, height=400, background_color='white', colormap='viridis').generate(texto_completo)
+
+# Mostrar la nube de palabras
+plt.figure(figsize=(10, 6))
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")  # Desactivar los ejes
+plt.show()
