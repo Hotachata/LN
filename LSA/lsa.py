@@ -1,12 +1,12 @@
 import numpy as np
+from scipy.linalg import svd
 
-# simulamos los valores de una matriz término-documento
-a = np.random.randint(0, 5, (5, 10))
-# conjunto de 10 documentos de texto y 5 dimensiones
-print("Matriz Término-Documento (A):\n", a,"\n\n") 
+# * Simulamos los valores de una matriz término-documento
+a = np.random.randint(0, 5, (5, 10)) # conjunto de 10 documentos de texto y 5 dimensiones
+print("Matriz Término-Documento:\n", a,"\n") 
 
 # * Singular Value Decomposition
-# 1. calculamos AA^T
-a_t = a.T
-aa_t = np.dot(a,a_t)
-print(aa_t)
+U, singular, V_transpose = svd(a)
+print("U —matriz de términos—:\n", U,"\n")
+print("S —vector de valores singulares—:\n", singular,"\n")
+print("V^{T} —matriz de documentos—:\n", V_transpose)
